@@ -62,7 +62,7 @@ class SessionCipher {
 
 	async encrypt(data) {
 		assertBuffer(data);
-		const ourIdentityKey = await this.storage.getOurIdentity();
+		const ourIdentityKey = this.storage.getOurIdentity();
 		return await this.queueJob(async () => {
 			const record = await this.getRecord();
 			if (!record) {
@@ -72,10 +72,10 @@ class SessionCipher {
 			if (!session) {
 				throw new errors.SessionError('No open session');
 			}
-			const remoteIdentityKey = session.indexInfo.remoteIdentityKey;
-			if (!(await this.storage.isTrustedIdentity(this.addr.id, remoteIdentityKey))) {
-				throw new errors.UntrustedIdentityKeyError(this.addr.id, remoteIdentityKey);
-			}
+			// const remoteIdentityKey = session.indexInfo.remoteIdentityKey;
+			// if (!(await this.storage.isTrustedIdentity(this.addr.id, remoteIdentityKey))) {
+			// 	throw new errors.UntrustedIdentityKeyError(this.addr.id, remoteIdentityKey);
+			// }
 			const chain = session.getChain(session.currentRatchet.ephemeralKeyPair.pubKey);
 			if (chain.chainType === ChainType.RECEIVING) {
 				throw new Error('Tried to encrypt on a receiving chain');
@@ -109,7 +109,7 @@ class SessionCipher {
 				type = 3; // prekey bundle
 				const preKeyMsg = protobufs.PreKeyWhisperMessage.create({
 					identityKey: ourIdentityKey.pubKey,
-					registrationId: await this.storage.getOurRegistrationId(),
+					registrationId: this.storage.getOurRegistrationId(),
 					baseKey: session.pendingPreKey.baseKey,
 					signedPreKeyId: session.pendingPreKey.signedKeyId,
 					message: result,
