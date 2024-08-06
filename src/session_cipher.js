@@ -170,9 +170,9 @@ class SessionCipher {
             }
             const result = await this.decryptWithSessions(data, record.getSessions());
             const remoteIdentityKey = result.session.indexInfo.remoteIdentityKey;
-            if (!await this.storage.isTrustedIdentity(this.addr.id, remoteIdentityKey)) {
-                throw new errors.UntrustedIdentityKeyError(this.addr.id, remoteIdentityKey);
-            }   
+            // if (!await this.storage.isTrustedIdentity(this.addr.id, remoteIdentityKey)) {
+            //     throw new errors.UntrustedIdentityKeyError(this.addr.id, remoteIdentityKey);
+            // }   
             if (record.isClosed(result.session)) {
                 // It's possible for this to happen when processing a backlog of messages.
                 // The message was, hopefully, just sent back in a time when this session
@@ -201,7 +201,7 @@ class SessionCipher {
                 }
                 record = new SessionRecord();
             }
-            const builder = new SessionBuilder(this.storage, this.addr);
+            const builder = new SessionBuilder(this.storage, this.addr.id);
             const preKeyId = await builder.initIncoming(record, preKeyProto);
             const session = record.getSession(preKeyProto.baseKey);
             const plaintext = await this.doDecryptWhisperMessage(preKeyProto.message, session);
