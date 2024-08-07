@@ -20,7 +20,7 @@ class SessionBuilder {
 			// if (!(await this.storage.isTrustedIdentity(this.addr.id, device.identityKey))) {
 			// 	throw new errors.UntrustedIdentityKeyError(this.addr.id, device.identityKey);
 			// }
-			let record$ = this.storage.loadSession(fqAddr);
+			// let record$ = this.storage.loadSession(fqAddr);
 
 			curve.verifySignature(
 				device.identityKey,
@@ -45,17 +45,18 @@ class SessionBuilder {
 			if (device.preKey) {
 				session.pendingPreKey.preKeyId = device.preKey.keyId;
 			}
-			let record = await record$;
+			// let record = await record$;
+			const record = new SessionRecord();
 
-			if (!record) {
-				record = new SessionRecord();
-			} else {
-				const openSession = record.getOpenSession();
-				if (openSession) {
-					console.warn('Closing stale open session for new outgoing prekey bundle');
-					record.closeSession(openSession);
-				}
-			}
+			// if (!record) {
+			// 	record = new SessionRecord();
+			// } else {
+			// 	const openSession = record.getOpenSession();
+			// 	if (openSession) {
+			// 		// console.warn('Closing stale open session for new outgoing prekey bundle');
+			// 		record.closeSession(openSession);
+			// 	}
+			// }
 			record.setSession(session);
 			await this.storage.storeSession(fqAddr, record);
 		});
